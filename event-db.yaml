@@ -1,0 +1,124 @@
+#   Copyright 2021 NEC Corporation
+#
+#   Licensed under the Apache License, Version 2.0 (the "License");
+#   you may not use this file except in compliance with the License.
+#   You may obtain a copy of the License at
+#
+#       http://www.apache.org/licenses/LICENSE-2.0
+#
+#   Unless required by applicable law or agreed to in writing, software
+#   distributed under the License is distributed on an "AS IS" BASIS,
+#   WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+#   See the License for the specific language governing permissions and
+#   limitations under the License.
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: ky-cloudsummit-event-db-pv-claim
+  namespace: ky-cloudsummit
+  labels:
+    app: event-db
+spec:
+  accessModes:
+    - ReadWriteOnce
+  resources:
+    requests:
+      storage: 1Gi
+  storageClassName: ky-cloudsummit-storage
+  volumeMode: Filesystem
+  volumeName: ky-cloudsummit-event-db-pv
+
+---
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: event-db-myconf
+  namespace: ky-cloudsummit
+data:
+  my.cnf: |
+    [mysqld]
+    character-set-server=utf8mb4
+    collation-server=utf8mb4_bin
+    secure_file_priv=/tmp
+    [client]
+    default-character-set=utf8mb4
+
+---
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: event-db-initdb
+  namespace: ky-cloudsummit
+data:
+  event.sql: |
+    create database event_db
+      CHARACTER SET utf8mb4
+      COLLATE utf8mb4_unicode_ci;
+    create user app_user IDENTIFIED WITH mysql_native_password BY 'password';
+    GRANT ALL ON event_db.* TO app_user;
+    use event_db;
+    create table events (
+      event_id int unsigned not null PRIMARY KEY AUTO_INCREMENT,
+      event_name varchar(256) not null,
+      event_overview varchar(4000),
+      event_date datetime not null,
+      event_venue varchar(4000),
+      is_deleted boolean not null DEFAULT 0
+    );
+
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: event-db
+  namespace: ky-cloudsummit
+spec:
+  selector:
+    matchLabels:
+      name: event-db
+  replicas: 1
+  template:
+    metadata:
+      labels:
+        name: event-db
+    spec:
+      volumes:
+      - name: mysql-persistent-storage
+        persistentVolumeClaim:
+          claimName: ky-cloudsummit-event-db-pv-claim
+      - name: mysqlconf-volume
+        configMap:
+          name: event-db-myconf
+      - name: mysqlinitdb-volume
+        configMap:
+          name: event-db-initdb
+      containers:
+      - name: mysql
+        image: mysql
+        volumeMounts:
+        - name: mysql-persistent-storage
+          mountPath: /var/lib/mysql
+        - name: mysqlconf-volume
+          mountPath: /etc/mysql
+        - name: mysqlinitdb-volume
+          mountPath: /docker-entrypoint-initdb.d
+        env:
+        - name: MYSQL_ROOT_PASSWORD
+          value: password
+
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: event-db
+  labels:
+    name: event-db
+  namespace: ky-cloudsummit
+spec:
+  type: ClusterIP
+  ports:
+  - name: mysql
+    port: 3306
+    targetPort: 3306
+  selector:
+    name: event-db

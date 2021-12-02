@@ -14,19 +14,19 @@
 apiVersion: v1
 kind: PersistentVolume
 metadata:
-  name: ky-cloudsummit-event-db-pv
+  name: exastro-days-tokyo-event-db-pv
   labels:
     type: local
   annotations:
     pv.kubernetes.io/bound-by-controller: "yes"
 spec:
-  storageClassName: ky-cloudsummit-storage
+  storageClassName: exastro-days-tokyo-storage
   capacity:
     storage: 1Gi
   accessModes:
     - ReadWriteOnce
   hostPath:
-    path: /var/data/ky-cloudsummit/event-db-pv
+    path: /var/data/exastro-days-tokyo/event-db-pv
     type: DirectoryOrCreate
   nodeAffinity:
     required:
@@ -35,4 +35,4 @@ spec:
         - key: kubernetes.io/hostname
           operator: In
           values:
-          - # Please specify the host name of the worker node #
+          - epoch-k8s-worker-triton

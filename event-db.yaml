@@ -14,8 +14,8 @@
 apiVersion: v1
 kind: PersistentVolumeClaim
 metadata:
-  name: ky-cloudsummit-event-db-pv-claim
-  namespace: ky-cloudsummit
+  name: exastro-days-tokyo-event-db-pv-claim
+  namespace: exastro-days-tokyo
   labels:
     app: event-db
 spec:
@@ -24,16 +24,16 @@ spec:
   resources:
     requests:
       storage: 1Gi
-  storageClassName: ky-cloudsummit-storage
+  storageClassName: exastro-days-tokyo-storage
   volumeMode: Filesystem
-  volumeName: ky-cloudsummit-event-db-pv
+  volumeName: exastro-days-tokyo-event-db-pv
 
 ---
 apiVersion: v1
 kind: ConfigMap
 metadata:
   name: event-db-myconf
-  namespace: ky-cloudsummit
+  namespace: exastro-days-tokyo
 data:
   my.cnf: |
     [mysqld]
@@ -48,7 +48,7 @@ apiVersion: v1
 kind: ConfigMap
 metadata:
   name: event-db-initdb
-  namespace: ky-cloudsummit
+  namespace: exastro-days-tokyo
 data:
   event.sql: |
     create database event_db
@@ -57,21 +57,87 @@ data:
     create user app_user IDENTIFIED WITH mysql_native_password BY 'password';
     GRANT ALL ON event_db.* TO app_user;
     use event_db;
-    create table events (
-      event_id int unsigned not null PRIMARY KEY AUTO_INCREMENT,
-      event_name varchar(256) not null,
+    SET SESSION FOREIGN_KEY_CHECKS=0;
+    /* Drop Tables */
+    DROP TABLE IF EXISTS seminars;
+    DROP TABLE IF EXISTS events;
+    DROP TABLE IF EXISTS mst_blocks;
+    DROP TABLE IF EXISTS mst_seminars;
+    /* Create Tables */
+    CREATE TABLE events
+    (
+      event_id int(10) unsigned NOT NULL AUTO_INCREMENT,
+      event_name varchar(256) NOT NULL,
       event_overview varchar(4000),
-      event_date datetime not null,
+      event_date datetime NOT NULL,
       event_venue varchar(4000),
-      is_deleted boolean not null DEFAULT 0
+      is_deleted boolean NOT NULL,
+      PRIMARY KEY (event_id),
+      UNIQUE (event_id)
     );
+    CREATE TABLE mst_blocks
+    (
+      block_id int(10) unsigned NOT NULL AUTO_INCREMENT,
+      block_name char(1) NOT NULL,
+      is_deleted boolean NOT NULL,
+      PRIMARY KEY (block_id),
+      UNIQUE (block_id),
+      UNIQUE (block_name)
+    );
+    CREATE TABLE mst_seminars
+    (
+      mst_seminar_id int(10) unsigned NOT NULL AUTO_INCREMENT,
+      seminar_name varchar(256) NOT NULL,
+      seminar_overview varchar(4000),
+      capacity int unsigned,
+      is_deleted boolean NOT NULL,
+      PRIMARY KEY (mst_seminar_id),
+      UNIQUE (mst_seminar_id)
+    );
+    CREATE TABLE seminars
+    (
+      seminar_id int(10) unsigned NOT NULL AUTO_INCREMENT,
+      start_datetime datetime NOT NULL,
+      is_deleted boolean NOT NULL,
+      mst_seminar_id int(10) unsigned NOT NULL,
+      block_id int(10) unsigned NOT NULL,
+      speaker_id int,
+      event_id int(10) unsigned NOT NULL,
+      PRIMARY KEY (seminar_id),
+      UNIQUE (seminar_id)
+    );
+    /* Create Foreign Keys */
+    ALTER TABLE seminars
+      ADD FOREIGN KEY (event_id)
+      REFERENCES events (event_id)
+      ON UPDATE RESTRICT
+      ON DELETE RESTRICT
+    ;
+    ALTER TABLE seminars
+      ADD FOREIGN KEY (block_id)
+      REFERENCES mst_blocks (block_id)
+      ON UPDATE RESTRICT
+      ON DELETE RESTRICT
+    ;
+    ALTER TABLE seminars
+      ADD FOREIGN KEY (mst_seminar_id)
+      REFERENCES mst_seminars (mst_seminar_id)
+      ON UPDATE RESTRICT
+      ON DELETE RESTRICT
+    ;
+    ALTER TABLE seminars
+      ADD FOREIGN KEY (speaker_id)
+      REFERENCES mst_speakers (speaker_id)
+      ON UPDATE RESTRICT
+      ON DELETE RESTRICT
+    ;
 
 ---
 apiVersion: apps/v1
 kind: Deployment
 metadata:
   name: event-db
-  namespace: ky-cloudsummit
+  namespace: exastro-days-tokyo
 spec:
   selector:
     matchLabels:
@@ -85,7 +151,7 @@ spec:
       volumes:
       - name: mysql-persistent-storage
         persistentVolumeClaim:
-          claimName: ky-cloudsummit-event-db-pv-claim
+          claimName: exastro-days-tokyo-event-db-pv-claim
       - name: mysqlconf-volume
         configMap:
           name: event-db-myconf
@@ -113,9 +179,9 @@ metadata:
   name: event-db
   labels:
     name: event-db
-  namespace: ky-cloudsummit
+  namespace: exastro-days-tokyo
 spec:
-  type: ClusterIP
+  type: NodePort
   ports:
   - name: mysql
     port: 3306

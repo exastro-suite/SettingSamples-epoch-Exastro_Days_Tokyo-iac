@@ -42,7 +42,7 @@ spec:
     spec:
       containers:
       - name: front-user
-        image: exastro/exastro-days-tokyo-front-user:test_1
+        image: exastro/exastro-days-tokyo-front-user:test_4
         envFrom:
         - prefix: SERVICE_
           configMapRef:
@@ -54,10 +54,6 @@ spec:
           value: C.UTF-8
         - name: PYTHONIOENCODING
           value: utf-8
-        command: ["sh", "-c"]
-        args:
-          - |
-            while(true) do sleep 60; done
 
 ---
 apiVersion: v1

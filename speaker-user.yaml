@@ -14,47 +14,44 @@
 apiVersion: v1
 kind: ConfigMap
 metadata:
-  name: resource-container-info-event-user
+  name: resource-container-info-speaker-user
   namespace: exastro-days-tokyo
 data:
-  EVENT_PROTOCOL: "http"
-  EVENT_HOST: "event-resource"
-  EVENT_PORT: "8080"
-  PARTICIPANT_PROTOCOL: "http"
-  PARTICIPANT_HOST: "participant-resource"
-  PARTICIPANT_PORT: "8080"
+  SPEAKER_PROTOCOL: "http"
+  SPEAKER_HOST: "speaker-resource"
+  SPEAKER_PORT: "8080"
 
 ---
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: event-user
+  name: speaker-user
   namespace: exastro-days-tokyo
 spec:
   selector:
     matchLabels:
-      name: event-user
+      name: speaker-user
   replicas: 1
   template:
     metadata:
       labels:
-        name: event-user
+        name: speaker-user
     spec:
       containers:
-      - name: event-user
-        image: exastro/exastro-days-tokyo-event-user:test_2
+      - name: speaker-user
+        image: exastro/exastro-days-tokyo-speaker-user:test_1
         envFrom:
         - prefix: RESOURCE_
           configMapRef:
-            name: resource-container-info-event-user
+            name: resource-container-info-speaker-user
 
 ---
 apiVersion: v1
 kind: Service
 metadata:
-  name: event-user
+  name: speaker-user
   labels:
-    name: event-user
+    name: speaker-user
   namespace: exastro-days-tokyo
 spec:
   type: NodePort
@@ -63,4 +60,4 @@ spec:
     port: 8080
     targetPort: 8080
   selector:
-    name: event-user
+    name: speaker-user

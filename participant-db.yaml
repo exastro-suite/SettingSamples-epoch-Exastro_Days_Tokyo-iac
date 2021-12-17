@@ -1,0 +1,133 @@
+#   Copyright 2021 NEC Corporation
+#
+#   Licensed under the Apache License, Version 2.0 (the "License");
+#   you may not use this file except in compliance with the License.
+#   You may obtain a copy of the License at
+#
+#       http://www.apache.org/licenses/LICENSE-2.0
+#
+#   Unless required by applicable law or agreed to in writing, software
+#   distributed under the License is distributed on an "AS IS" BASIS,
+#   WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+#   See the License for the specific language governing permissions and
+#   limitations under the License.
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: exastro-days-tokyo-participant-db-pv-claim
+  namespace: exastro-days-tokyo
+  labels:
+    app: participant-db
+spec:
+  accessModes:
+    - ReadWriteOnce
+  resources:
+    requests:
+      storage: 1Gi
+  storageClassName: exastro-days-tokyo-storage
+  volumeMode: Filesystem
+  volumeName: exastro-days-tokyo-participant-db-pv
+
+---
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: participant-db-myconf
+  namespace: exastro-days-tokyo
+data:
+  my.cnf: |
+    [mysqld]
+    character-set-server=utf8mb4
+    collation-server=utf8mb4_bin
+    secure_file_priv=/tmp
+    [client]
+    default-character-set=utf8mb4
+
+---
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: participant-db-initdb
+  namespace: exastro-days-tokyo
+data:
+  participant.sql: |
+    create database participant_db
+      CHARACTER SET utf8mb4
+      COLLATE utf8mb4_unicode_ci;
+    create user app_user IDENTIFIED WITH mysql_native_password BY 'password';
+    GRANT ALL ON participant_db.* TO app_user;
+    use participant_db;
+    SET SESSION FOREIGN_KEY_CHECKS=0;
+    /* Drop Tables */
+    DROP TABLE IF EXISTS participants;
+    
+    /* Create Tables */
+    CREATE TABLE participants
+    (
+      participant_id int(10) unsigned NOT NULL AUTO_INCREMENT,
+      user_id varchar(256) NOT NULL,
+      user_name varchar(256) NOT NULL,
+      kind_of_sso varchar(256) NOT NULL,
+      registered_date datetime NOT NULL,
+      delete_flag boolean NOT NULL,
+      seminar_id int(10) unsigned NOT NULL,
+      PRIMARY KEY (participant_id),
+      UNIQUE (participant_id)
+    );
+
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: participant-db
+  namespace: exastro-days-tokyo
+spec:
+  selector:
+    matchLabels:
+      name: participant-db
+  replicas: 1
+  template:
+    metadata:
+      labels:
+        name: participant-db
+    spec:
+      volumes:
+      - name: mysql-persistent-storage
+        persistentVolumeClaim:
+          claimName: exastro-days-tokyo-participant-db-pv-claim
+      - name: mysqlconf-volume
+        configMap:
+          name: participant-db-myconf
+      - name: mysqlinitdb-volume
+        configMap:
+          name: participant-db-initdb
+      containers:
+      - name: mysql
+        image: mysql
+        volumeMounts:
+        - name: mysql-persistent-storage
+          mountPath: /var/lib/mysql
+        - name: mysqlconf-volume
+          mountPath: /etc/mysql
+        - name: mysqlinitdb-volume
+          mountPath: /docker-entrypoint-initdb.d
+        env:
+        - name: MYSQL_ROOT_PASSWORD
+          value: password
+
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: participant-db
+  labels:
+    name: participant-db
+  namespace: exastro-days-tokyo
+spec:
+  type: NodePort
+  ports:
+  - name: mysql
+    port: 3306
+    targetPort: 3306
+  selector:
+    name: participant-db

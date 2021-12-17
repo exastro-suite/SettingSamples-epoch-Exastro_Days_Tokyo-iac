@@ -63,12 +63,12 @@ data:
 
     CREATE TABLE mst_speakers
     (
-    	speaker_id int NOT NULL AUTO_INCREMENT,
-    	speaker_name varchar(256) NOT NULL,
-    	speaker_profile varchar(4000),
-	    delete_flag boolean NOT NULL,
-	    PRIMARY KEY (speaker_id),
-	    UNIQUE (speaker_id)
+      speaker_id int NOT NULL AUTO_INCREMENT,
+      speaker_name varchar(256) NOT NULL,
+      speaker_profile varchar(4000),
+      delete_flag boolean NOT NULL,
+      PRIMARY KEY (speaker_id),
+      UNIQUE (speaker_id)
     );
 
 ---

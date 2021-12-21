@@ -39,7 +39,7 @@ spec:
     spec:
       containers:
       - name: speaker-user
-        image: exastro/exastro-days-tokyo-speaker-user:test_1
+        image: exastro/exastro-days-tokyo-speaker-user:0.0.1_20211221_1730
         envFrom:
         - prefix: RESOURCE_
           configMapRef:

@@ -38,7 +38,7 @@ spec:
     spec:
       containers:
       - name: event-resource
-        image: exastro/exastro-days-tokyo-event-resource:0.0.1_20211221_1730
+        image: exastro/exastro-days-tokyo-event-resource:0.0.1_20211224_0910
         envFrom:
         - prefix: DB_
           configMapRef:

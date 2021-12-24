@@ -42,7 +42,7 @@ spec:
     spec:
       containers:
       - name: front-user
-        image: exastro/exastro-days-tokyo-front-user:0.0.1_20211221_1730
+        image: exastro/exastro-days-tokyo-front-user:0.0.1_20211224_1450
         envFrom:
         - prefix: SERVICE_
           configMapRef:

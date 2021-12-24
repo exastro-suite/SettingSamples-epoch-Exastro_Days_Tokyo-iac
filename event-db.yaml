@@ -125,12 +125,6 @@ data:
       ON UPDATE RESTRICT
       ON DELETE RESTRICT
     ;
-    ALTER TABLE seminars
-      ADD FOREIGN KEY (speaker_id)
-      REFERENCES mst_speakers (speaker_id)
-      ON UPDATE RESTRICT
-      ON DELETE RESTRICT
-    ;
 
 ---
 apiVersion: apps/v1

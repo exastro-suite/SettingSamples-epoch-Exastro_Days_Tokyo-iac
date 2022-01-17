@@ -14,22 +14,8 @@
 apiVersion: v1
 kind: ConfigMap
 metadata:
-  name: sso-authc-info
-  namespace: exastro-days-tokyo
-data:
-  GOOGLE_CLIENT_ID: ""
-  GOOGLE_CLIENT_SECRET: ""
-  GITHUB_CLIENT_ID: ""
-  GITHUB_CLIENT_SECRET: ""
-  TWITTER_CLIENT_ID: ""
-  TWITTER_CLIENT_SECRET: ""
-
----
-apiVersion: v1
-kind: ConfigMap
-metadata:
   name: service-container-info
-  namespace: exastro-days-tokyo
+  # namespace: # don't set
 data:
   EVENT_PROTOCOL: "http"
   EVENT_HOST: "event-user"
@@ -43,12 +29,12 @@ apiVersion: apps/v1
 kind: Deployment
 metadata:
   name: front-user
-  namespace: exastro-days-tokyo
+  # namespace: # don't set
 spec:
   selector:
     matchLabels:
       name: front-user
-  replicas: 1
+  replicas: {{ replicas }}
   template:
     metadata:
       labels:
@@ -56,14 +42,11 @@ spec:
     spec:
       containers:
       - name: front-user
-        image: exastro/exastro-days-tokyo-front-user:0.0.1_20211224_1450
+        image: "{{ image_name }}:{{ image_tag }}"
         envFrom:
         - prefix: SERVICE_
           configMapRef:
             name: service-container-info
-        - prefix: SSO_
-          configMapRef:
-            name: sso-authc-info
         env:
         - name: LC_ALL
           value: C.UTF-8
@@ -79,13 +62,13 @@ metadata:
   name: front-user
   labels:
     name: front-user
-  namespace: exastro-days-tokyo
+  # namespace: # don't set
 spec:
   type: NodePort
   ports:
   - name: flask
     port: 5000
     targetPort: 5000
-    nodePort: 31443
+    nodePort: "{{ access_port }}"
   selector:
     name: front-user

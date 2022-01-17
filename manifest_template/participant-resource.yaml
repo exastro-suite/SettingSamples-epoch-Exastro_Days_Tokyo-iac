@@ -1,0 +1,62 @@
+#   Copyright 2021 NEC Corporation
+#
+#   Licensed under the Apache License, Version 2.0 (the "License");
+#   you may not use this file except in compliance with the License.
+#   You may obtain a copy of the License at
+#
+#       http://www.apache.org/licenses/LICENSE-2.0
+#
+#   Unless required by applicable law or agreed to in writing, software
+#   distributed under the License is distributed on an "AS IS" BASIS,
+#   WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+#   See the License for the specific language governing permissions and
+#   limitations under the License.
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: db-container-info-participant-resource
+  # namespace: # don't set
+data:
+  PARTICIPANT_HOST: "participant-db"
+  PARTICIPANT_PORT: "3306"
+
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: participant-resource
+  # namespace: # don't set
+spec:
+  selector:
+    matchLabels:
+      name: participant-resource
+  replicas: {{ replicas }}
+  template:
+    metadata:
+      labels:
+        name: participant-resource
+    spec:
+      containers:
+      - name: participant-resource
+        image: "{{ image_name }}:{{ image_tag }}"
+        envFrom:
+        - prefix: DB_
+          configMapRef:
+            name: db-container-info-participant-resource
+
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: participant-resource
+  labels:
+    name: participant-resource
+  # namespace: # don't set
+spec:
+  type: NodePort
+  ports:
+  - name: tomcat
+    port: 8080
+    targetPort: 8080
+  selector:
+    name: participant-resource

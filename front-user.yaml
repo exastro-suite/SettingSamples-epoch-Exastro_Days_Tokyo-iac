@@ -19,6 +19,7 @@ metadata:
 data:
   GOOGLE_CLIENT_ID: ""
   GOOGLE_CLIENT_SECRET: ""
+  GOOGLE_REDIRECT_URI: "http://exastro-days-tokyo.example.com:31443" # must actual urls (https://**.example.com:**), not ip address (https://**.**.**.**:**)
   GITHUB_CLIENT_ID: ""
   GITHUB_CLIENT_SECRET: ""
   TWITTER_CLIENT_ID: ""

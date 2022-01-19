@@ -53,7 +53,7 @@ metadata:
     name: participant-resource
   # namespace: # don't set
 spec:
-  type: NodePort
+  type: ClusterIP
   ports:
   - name: tomcat
     port: 8080

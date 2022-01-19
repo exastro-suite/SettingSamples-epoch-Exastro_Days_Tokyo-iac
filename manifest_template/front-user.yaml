@@ -14,6 +14,21 @@
 apiVersion: v1
 kind: ConfigMap
 metadata:
+  name: sso-authc-info
+  # namespace: # don't set
+data:
+  GOOGLE_CLIENT_ID: ""
+  GOOGLE_CLIENT_SECRET: ""
+  GOOGLE_REDIRECT_URI: "" # must actual urls (https://**.example.com:**), not ip address (https://**.**.**.**:**)
+  GITHUB_CLIENT_ID: ""
+  GITHUB_CLIENT_SECRET: ""
+  TWITTER_CLIENT_ID: ""
+  TWITTER_CLIENT_SECRET: ""
+
+---
+apiVersion: v1
+kind: ConfigMap
+metadata:
   name: service-container-info
   # namespace: # don't set
 data:
@@ -47,6 +62,9 @@ spec:
         - prefix: SERVICE_
           configMapRef:
             name: service-container-info
+        - prefix: SSO_
+          configMapRef:
+            name: sso-authc-info
         env:
         - name: LC_ALL
           value: C.UTF-8

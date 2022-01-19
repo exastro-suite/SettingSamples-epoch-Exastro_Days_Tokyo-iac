@@ -14,7 +14,7 @@
 apiVersion: v1
 kind: PersistentVolumeClaim
 metadata:
-  name: exastro-days-tokyo-speaker-db-pv-claim
+  name: speaker-db-pv-claim
   # namespace: # don't set
   labels:
     app: speaker-db
@@ -90,7 +90,7 @@ spec:
       volumes:
       - name: mysql-persistent-storage
         persistentVolumeClaim:
-          claimName: exastro-days-tokyo-speaker-db-pv-claim
+          claimName: speaker-db-pv-claim
       - name: mysqlconf-volume
         configMap:
           name: speaker-db-myconf
@@ -120,7 +120,7 @@ metadata:
     name: speaker-db
   # namespace: # don't set
 spec:
-  type: NodePort
+  type: ClusterIP
   ports:
   - name: mysql
     port: 3306

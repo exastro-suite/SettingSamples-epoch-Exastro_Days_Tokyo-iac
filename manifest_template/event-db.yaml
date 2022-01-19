@@ -14,7 +14,7 @@
 apiVersion: v1
 kind: PersistentVolumeClaim
 metadata:
-  name: exastro-days-tokyo-event-db-pv-claim
+  name: event-db-pv-claim
   # namespace: # don't set
   labels:
     app: event-db
@@ -145,7 +145,7 @@ spec:
       volumes:
       - name: mysql-persistent-storage
         persistentVolumeClaim:
-          claimName: exastro-days-tokyo-event-db-pv-claim
+          claimName: event-db-pv-claim
       - name: mysqlconf-volume
         configMap:
           name: event-db-myconf

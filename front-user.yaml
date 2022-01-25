@@ -18,12 +18,18 @@ metadata:
   namespace: exastro-days-tokyo
 data:
   GOOGLE_CLIENT_ID: ""
-  GOOGLE_CLIENT_SECRET: ""
-  GOOGLE_REDIRECT_URI: "http://exastro-days-tokyo.example.com:31443" # must actual urls (https://**.example.com:**), not ip address (https://**.**.**.**:**)
   GITHUB_CLIENT_ID: ""
-  GITHUB_CLIENT_SECRET: ""
   TWITTER_CLIENT_ID: ""
-  TWITTER_CLIENT_SECRET: ""
+
+---
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: session-manage-info
+  namespace: exastro-days-tokyo
+data:
+  SECRET_KEY: "" # If empty, generate random secret. (secrets.token_hex(16))
+  REDIS_URL: "redis://session-db:6379"
 
 ---
 apiVersion: v1
@@ -57,7 +63,7 @@ spec:
     spec:
       containers:
       - name: front-user
-        image: exastro/exastro-days-tokyo-front-user:0.0.1_20211224_1450
+        image: exastro/exastro-days-tokyo-front-user:0.0.1_20220124_1645
         envFrom:
         - prefix: SERVICE_
           configMapRef:
@@ -65,6 +71,8 @@ spec:
         - prefix: SSO_
           configMapRef:
             name: sso-authc-info
+        - configMapRef:
+            name: session-manage-info
         env:
         - name: LC_ALL
           value: C.UTF-8

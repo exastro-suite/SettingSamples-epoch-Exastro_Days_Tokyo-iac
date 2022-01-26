@@ -39,10 +39,10 @@ metadata:
   namespace: exastro-days-tokyo
 data:
   EVENT_PROTOCOL: "http"
-  EVENT_HOST: "event-user"
+  EVENT_HOST: "event-user.exastro-days-tokyo.svc.cluster.local"
   EVENT_PORT: "8080"
   SPERKER_PROTOCOL: "http"
-  SPERKER_HOST: "speaker-user"
+  SPERKER_HOST: "speaker-user.exastro-days-tokyo.svc.cluster.local"
   SPERKER_PORT: "8080"
 
 ---
@@ -80,6 +80,12 @@ spec:
           value: C.UTF-8
         - name: PYTHONIOENCODING
           value: utf-8
+        - name: HTTP_PROXY
+          value: ""
+        - name: HTTPS_PROXY
+          value: ""
+        - name: NO_PROXY
+          value: ".exastro-days-tokyo.svc.cluster.local"
 
 ---
 apiVersion: v1

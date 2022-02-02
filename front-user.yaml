@@ -41,9 +41,9 @@ data:
   EVENT_PROTOCOL: "http"
   EVENT_HOST: "event-user.exastro-days-tokyo.svc.cluster.local"
   EVENT_PORT: "8080"
-  SPERKER_PROTOCOL: "http"
-  SPERKER_HOST: "speaker-user.exastro-days-tokyo.svc.cluster.local"
-  SPERKER_PORT: "8080"
+  SPEAKER_PROTOCOL: "http"
+  SPEAKER_HOST: "speaker-user.exastro-days-tokyo.svc.cluster.local"
+  SPEAKER_PORT: "8080"
 
 ---
 apiVersion: apps/v1

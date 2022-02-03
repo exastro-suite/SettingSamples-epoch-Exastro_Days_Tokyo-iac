@@ -23,10 +23,10 @@ spec:
     - ReadWriteOnce
   resources:
     requests:
-      storage: "{{ storage_capacity }}" # e.g. 1Gi
-  storageClassName: "{{ namespace }}-storage"
+      storage: "{{ param1 }}" # e.g. 1Gi
+  storageClassName: "{{ param2 }}-storage" # set namespace
   volumeMode: Filesystem
-  volumeName: "{{ namespace }}-speaker-db-pv"
+  volumeName: "{{ param2 }}-speaker-db-pv" # set namespace
 
 ---
 apiVersion: v1
@@ -81,7 +81,7 @@ spec:
   selector:
     matchLabels:
       name: speaker-db
-  replicas: {{ replicas }}
+  replicas: {{ param3 }}
   template:
     metadata:
       labels:

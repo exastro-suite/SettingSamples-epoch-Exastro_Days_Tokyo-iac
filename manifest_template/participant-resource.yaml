@@ -30,7 +30,7 @@ spec:
   selector:
     matchLabels:
       name: participant-resource
-  replicas: {{ replicas }}
+  replicas: {{ param1 }}
   template:
     metadata:
       labels:

@@ -34,7 +34,7 @@ spec:
   selector:
     matchLabels:
       name: event-user
-  replicas: {{ replicas }}
+  replicas: {{ param1 }}
   template:
     metadata:
       labels:

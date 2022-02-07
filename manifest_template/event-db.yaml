@@ -23,10 +23,10 @@ spec:
     - ReadWriteOnce
   resources:
     requests:
-      storage: "{{ param1 }}" # e.g. 1Gi
-  storageClassName: "{{ param2 }}-storage" # set namespace
+      storage: "{{ param01 }}" # e.g. 1Gi
+  storageClassName: "{{ param02 }}-storage" # set namespace
   volumeMode: Filesystem
-  volumeName: "{{ param2 }}-event-db-pv" # set namespace
+  volumeName: "{{ param02 }}-event-db-pv" # set namespace
 
 ---
 apiVersion: v1
@@ -136,7 +136,7 @@ spec:
   selector:
     matchLabels:
       name: event-db
-  replicas: {{ param3 }}
+  replicas: {{ param03 }}
   template:
     metadata:
       labels:

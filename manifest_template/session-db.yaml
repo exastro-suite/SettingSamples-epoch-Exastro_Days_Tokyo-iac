@@ -23,10 +23,10 @@ spec:
     - ReadWriteMany
   resources:
     requests:
-      storage: "{{ param1 }}" # e.g. 1Gi
-  storageClassName: "{{ param2 }}-storage" # set namespace
+      storage: "{{ param01 }}" # e.g. 1Gi
+  storageClassName: "{{ param02 }}-storage" # set namespace
   volumeMode: Filesystem
-  volumeName: "{{ param2 }}-session-db-pv" # set namespace
+  volumeName: "{{ param02 }}-session-db-pv" # set namespace
 
 ---
 apiVersion: v1

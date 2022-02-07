@@ -31,7 +31,7 @@ spec:
   selector:
     matchLabels:
       name: speaker-user
-  replicas: {{ param1 }}
+  replicas: {{ param01 }}
   template:
     metadata:
       labels:
@@ -39,7 +39,7 @@ spec:
     spec:
       containers:
       - name: speaker-user
-        image: "{{ image_name }}:{{ image_tag }}"
+        image: "{{ image }}:{{ image_tag }}"
         envFrom:
         - prefix: RESOURCE_
           configMapRef:

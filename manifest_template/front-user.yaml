@@ -49,7 +49,7 @@ spec:
   selector:
     matchLabels:
       name: front-user
-  replicas: {{ param1 }}
+  replicas: {{ param01 }}
   template:
     metadata:
       labels:
@@ -57,7 +57,7 @@ spec:
     spec:
       containers:
       - name: front-user
-        image: "{{ image_name }}:{{ image_tag }}"
+        image: "{{ image }}:{{ image_tag }}"
         envFrom:
         - prefix: SERVICE_
           configMapRef:
@@ -87,6 +87,6 @@ spec:
   - name: flask
     port: 5000
     targetPort: 5000
-    nodePort: "{{ param2 }}" # set access_port
+    nodePort: "{{ param02 }}" # set access_port
   selector:
     name: front-user

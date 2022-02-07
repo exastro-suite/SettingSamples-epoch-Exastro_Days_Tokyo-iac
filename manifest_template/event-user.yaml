@@ -34,7 +34,7 @@ spec:
   selector:
     matchLabels:
       name: event-user
-  replicas: {{ param1 }}
+  replicas: {{ param01 }}
   template:
     metadata:
       labels:
@@ -42,7 +42,7 @@ spec:
     spec:
       containers:
       - name: event-user
-        image: "{{ image_name }}:{{ image_tag }}"
+        image: "{{ image }}:{{ image_tag }}"
         envFrom:
         - prefix: RESOURCE_
           configMapRef:

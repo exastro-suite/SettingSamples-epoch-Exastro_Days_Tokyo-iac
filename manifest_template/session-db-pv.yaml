@@ -14,19 +14,19 @@
 apiVersion: v1
 kind: PersistentVolume
 metadata:
-  name: "{{ param1 }}-session-db-pv" # set namespace
+  name: "{{ param01 }}-session-db-pv" # set namespace
   labels:
     type: local
   annotations:
     pv.kubernetes.io/bound-by-controller: "yes"
 spec:
-  storageClassName: "{{ param1 }}-storage" # set namespace
+  storageClassName: "{{ param01 }}-storage" # set namespace
   capacity:
-    storage: "{{ param2 }}" # e.g. 1Gi
+    storage: "{{ param02 }}" # e.g. 1Gi
   accessModes:
     - ReadWriteMany
   hostPath:
-    path: "/var/data/{{ param1 }}/session-db-pv" # set namespace
+    path: "/var/data/{{ param01 }}/session-db-pv" # set namespace
     type: DirectoryOrCreate
   nodeAffinity:
     required:
@@ -35,4 +35,4 @@ spec:
         - key: kubernetes.io/hostname
           operator: In
           values:
-          - "{{ param3 }}" # set node_ip
+          - "{{ param03 }}" # set node_ip

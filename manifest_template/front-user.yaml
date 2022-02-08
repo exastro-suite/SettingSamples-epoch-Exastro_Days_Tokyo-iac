@@ -17,26 +17,32 @@ metadata:
   name: sso-authc-info
   # namespace: # don't set
 data:
-  GOOGLE_CLIENT_ID: ""
-  GOOGLE_CLIENT_SECRET: ""
-  GOOGLE_REDIRECT_URI: "" # must actual urls (https://**.example.com:**), not ip address (https://**.**.**.**:**)
-  GITHUB_CLIENT_ID: ""
-  GITHUB_CLIENT_SECRET: ""
-  TWITTER_CLIENT_ID: ""
-  TWITTER_CLIENT_SECRET: ""
+  GOOGLE_CLIENT_ID: "{{ param01 }}"
+  GITHUB_CLIENT_ID: "{{ param02 }}"
+  TWITTER_CLIENT_ID: "{{ param03 }}"
 
 ---
 apiVersion: v1
 kind: ConfigMap
 metadata:
-  name: service-container-info
+  name: session-manage-info-front-user
+  # namespace: # don't set
+data:
+  SECRET_KEY: "" # If empty, generate random secret. (secrets.token_hex(16))
+  REDIS_URL: "redis://session-db:6379"
+
+---
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: service-container-info-front-user
   # namespace: # don't set
 data:
   EVENT_PROTOCOL: "http"
-  EVENT_HOST: "event-user"
+  EVENT_HOST: "event-user.{{ param04 }}.svc.cluster.local" # set namespace
   EVENT_PORT: "8080"
   SPEAKER_PROTOCOL: "http"
-  SPEAKER_HOST: "speaker-user"
+  SPEAKER_HOST: "speaker-user.{{ param04 }}.svc.cluster.local" # set namespace
   SPEAKER_PORT: "8080"
 
 ---
@@ -49,7 +55,7 @@ spec:
   selector:
     matchLabels:
       name: front-user
-  replicas: {{ param01 }}
+  replicas: {{ param05 }}
   template:
     metadata:
       labels:
@@ -61,10 +67,12 @@ spec:
         envFrom:
         - prefix: SERVICE_
           configMapRef:
-            name: service-container-info
+            name: service-container-info-front-user
         - prefix: SSO_
           configMapRef:
             name: sso-authc-info
+        - configMapRef:
+            name: session-manage-info-front-user
         env:
         - name: LC_ALL
           value: C.UTF-8
@@ -72,6 +80,12 @@ spec:
           value: C.UTF-8
         - name: PYTHONIOENCODING
           value: utf-8
+        - name: HTTP_PROXY
+          value: "{{ param06 }}"
+        - name: HTTPS_PROXY
+          value: "{{ param07 }}"
+        - name: NO_PROXY
+          value: ".{{ param04 }}.svc.cluster.local" # set namespace
 
 ---
 apiVersion: v1
@@ -87,6 +101,6 @@ spec:
   - name: flask
     port: 5000
     targetPort: 5000
-    nodePort: "{{ param02 }}" # set access_port
+    nodePort: {{ param08 }} # set access_port
   selector:
     name: front-user

@@ -14,18 +14,7 @@
 apiVersion: v1
 kind: ConfigMap
 metadata:
-  name: sso-authc-info
-  namespace: exastro-days-tokyo
-data:
-  GOOGLE_CLIENT_ID: ""
-  GITHUB_CLIENT_ID: ""
-  TWITTER_CLIENT_ID: ""
-
----
-apiVersion: v1
-kind: ConfigMap
-metadata:
-  name: session-manage-info-front-user
+  name: session-manage-info-front-admin
   namespace: exastro-days-tokyo
 data:
   SECRET_KEY: "" # If empty, generate random secret. (secrets.token_hex(16))
@@ -35,44 +24,44 @@ data:
 apiVersion: v1
 kind: ConfigMap
 metadata:
-  name: service-container-info-front-user
+  name: service-container-info-front-admin
   namespace: exastro-days-tokyo
 data:
   EVENT_PROTOCOL: "http"
-  EVENT_HOST: "event-user.exastro-days-tokyo.svc.cluster.local"
+  EVENT_HOST: "event-admin.exastro-days-tokyo.svc.cluster.local"
   EVENT_PORT: "8080"
   SPEAKER_PROTOCOL: "http"
-  SPEAKER_HOST: "speaker-user.exastro-days-tokyo.svc.cluster.local"
+  SPEAKER_HOST: "speaker-admin.exastro-days-tokyo.svc.cluster.local"
   SPEAKER_PORT: "8080"
 
 ---
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: front-user
+  name: front-admin
   namespace: exastro-days-tokyo
 spec:
   selector:
     matchLabels:
-      name: front-user
+      name: front-admin
   replicas: 1
   template:
     metadata:
       labels:
-        name: front-user
+        name: front-admin
     spec:
       containers:
-      - name: front-user
-        image: exastro/exastro-days-tokyo-front-user:0.0.1_20220124_1645
+      - name: front-admin
+        image: exastro/exastro-days-tokyo-front-admin:0.0.1_20220203_1640
         envFrom:
         - prefix: SERVICE_
           configMapRef:
-            name: service-container-info-front-user
+            name: service-container-info-front-admin
         - prefix: SSO_
           configMapRef:
             name: sso-authc-info
         - configMapRef:
-            name: session-manage-info-front-user
+            name: session-manage-info-front-admin
         env:
         - name: LC_ALL
           value: C.UTF-8
@@ -91,9 +80,9 @@ spec:
 apiVersion: v1
 kind: Service
 metadata:
-  name: front-user
+  name: front-admin
   labels:
-    name: front-user
+    name: front-admin
   namespace: exastro-days-tokyo
 spec:
   type: NodePort
@@ -101,6 +90,6 @@ spec:
   - name: flask
     port: 5000
     targetPort: 5000
-    nodePort: 31443
+    nodePort: 32443
   selector:
-    name: front-user
+    name: front-admin

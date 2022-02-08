@@ -1,4 +1,4 @@
-#   Copyright 2021 NEC Corporation
+#   Copyright 2022 NEC Corporation
 #
 #   Licensed under the Apache License, Version 2.0 (the "License");
 #   you may not use this file except in compliance with the License.
@@ -14,46 +14,47 @@
 apiVersion: v1
 kind: ConfigMap
 metadata:
-  name: db-container-info-event-resource
+  name: resource-container-info-event-admin
   namespace: exastro-days-tokyo
 data:
-  EVENT_HOST: "event-db"
-  EVENT_PORT: "3306"
+  EVENT_PROTOCOL: "http"
+  EVENT_HOST: "event-resource"
+  EVENT_PORT: "8080"
+  PARTICIPANT_PROTOCOL: "http"
+  PARTICIPANT_HOST: "participant-resource"
+  PARTICIPANT_PORT: "8080"
 
 ---
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: event-resource
+  name: event-admin
   namespace: exastro-days-tokyo
 spec:
   selector:
     matchLabels:
-      name: event-resource
+      name: event-admin
   replicas: 1
   template:
     metadata:
       labels:
-        name: event-resource
+        name: event-admin
     spec:
       containers:
-      - name: event-resource
-        image: exastro/exastro-days-tokyo-event-resource:0.0.1_20220207_1145
-        env:
-        - name: LOGGING_LEVEL_ROOT
-          value: debug
+      - name: event-admin
+        image: exastro/exastro-days-tokyo-event-admin:0.0.1_20220206_1835
         envFrom:
-        - prefix: DB_
+        - prefix: RESOURCE_
           configMapRef:
-            name: db-container-info-event-resource
+            name: resource-container-info-event-admin
 
 ---
 apiVersion: v1
 kind: Service
 metadata:
-  name: event-resource
+  name: event-admin
   labels:
-    name: event-resource
+    name: event-admin
   namespace: exastro-days-tokyo
 spec:
   type: NodePort
@@ -62,4 +63,4 @@ spec:
     port: 8080
     targetPort: 8080
   selector:
-    name: event-resource
+    name: event-admin

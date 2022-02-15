@@ -42,7 +42,7 @@ spec:
     spec:
       containers:
       - name: event-user
-        image: exastro/exastro-days-tokyo-event-user:0.0.1_20220202_1630
+        image: exastro/exastro-days-tokyo-event-user:0.0.1_20220214_1515
         envFrom:
         - prefix: RESOURCE_
           configMapRef:

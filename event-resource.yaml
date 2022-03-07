@@ -38,7 +38,7 @@ spec:
     spec:
       containers:
       - name: event-resource
-        image: exastro/exastro-days-tokyo-event-resource:0.0.1_20220215_2510
+        image: exastro/exastro-days-tokyo-event-resource:0.0.1_20220304_1750
         env:
         - name: LOGGING_LEVEL_ROOT
           value: debug

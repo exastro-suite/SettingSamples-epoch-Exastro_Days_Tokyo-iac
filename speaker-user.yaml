@@ -27,6 +27,8 @@ kind: Deployment
 metadata:
   name: speaker-user
   namespace: exastro-days-tokyo
+  annotations:
+    sidecar.jaegertracing.io/inject: "true"
 spec:
   selector:
     matchLabels:
@@ -36,10 +38,11 @@ spec:
     metadata:
       labels:
         name: speaker-user
+        app: speaker-user
     spec:
       containers:
       - name: speaker-user
-        image: exastro/exastro-days-tokyo-speaker-user:0.0.1_20220304_1700
+        image: exastro/exastro-days-tokyo-speaker-user:0.0.1_20220318_1350
         envFrom:
         - prefix: RESOURCE_
           configMapRef:

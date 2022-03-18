@@ -30,6 +30,8 @@ kind: Deployment
 metadata:
   name: event-admin
   namespace: exastro-days-tokyo
+  annotations:
+    sidecar.jaegertracing.io/inject: "true"
 spec:
   selector:
     matchLabels:
@@ -39,10 +41,11 @@ spec:
     metadata:
       labels:
         name: event-admin
+        app: event-admin
     spec:
       containers:
       - name: event-admin
-        image: exastro/exastro-days-tokyo-event-admin:0.0.1_20220215_2510
+        image: exastro/exastro-days-tokyo-event-admin:0.0.1_20220318_1350
         envFrom:
         - prefix: RESOURCE_
           configMapRef:

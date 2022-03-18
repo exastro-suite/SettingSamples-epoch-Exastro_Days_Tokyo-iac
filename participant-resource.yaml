@@ -26,6 +26,8 @@ kind: Deployment
 metadata:
   name: participant-resource
   namespace: exastro-days-tokyo
+  annotations:
+    sidecar.jaegertracing.io/inject: "true"
 spec:
   selector:
     matchLabels:
@@ -35,10 +37,11 @@ spec:
     metadata:
       labels:
         name: participant-resource
+        app: participant-resource
     spec:
       containers:
       - name: participant-resource
-        image: exastro/exastro-days-tokyo-participant-resource:0.0.1_20220201_1025
+        image: exastro/exastro-days-tokyo-participant-resource:0.0.1_20220318_1350
         envFrom:
         - prefix: DB_
           configMapRef:

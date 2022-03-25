@@ -1,0 +1,57 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: grafana 
+data:
+  datasources.yaml: |
+    sources:
+    - name: gdev-jaeger
+      type: jaeger
+      uid: gdev-jaeger
+      access: proxy
+      url: http://localhost:16686
+      editable: true
+    - name: Prometheus
+      type: prometheus
+      access: proxy
+      orgId: 1
+      url: http://prometheus:9090
+      basicAuth: false
+      isDefault: false
+      version: 1
+      editable: false
+    - name: Tempo
+      type: tempo
+      access: proxy
+      orgId: 1
+      url: http://tempo:3200
+      basicAuth: false
+      isDefault: true
+      version: 1
+      editable: false
+      apiVersion: 1
+      uid: tempo
+
+      url: http://tempo:3200
+      basicAuth: false
+      isDefault: true
+      version: 1
+      editable: false
+      apiVersion: 1
+      uid: tempo
+    - name: Loki
+      type: loki
+      access: proxy
+      orgId: 1
+      url: http://loki:3100
+      basicAuth: false
+      isDefault: false
+      version: 1
+      editable: false
+      apiVersion: 1
+      jsonData:
+        derivedFields:
+          - datasourceUid: tempo
+            matcherRegex: (?:traceID|trace_id)=(\w+)
+            name: TraceID
+            url: $${__value.raw}

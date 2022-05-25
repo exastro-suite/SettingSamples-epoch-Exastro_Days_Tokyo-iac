@@ -35,6 +35,21 @@ data:
   SPEAKER_PORT: "8080"
 
 ---
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: authc-manage-info-front-admin
+  namespace: exastro-days-tokyo
+data:
+  LOGIN_TYPE: "keycloak"
+  OIDC_SERVER_PROTOCOL: "http"
+  OIDC_SERVER_HOST: ""
+  OIDC_SERVER_PORT: ""
+  OIDC_REALM: "exastro-days-tokyo"
+  OIDC_CLIENT_ID: "front-admin"
+  OIDC_CLIENT_SECRET: ""
+
+---
 apiVersion: apps/v1
 kind: Deployment
 metadata:
@@ -57,11 +72,10 @@ spec:
         - prefix: SERVICE_
           configMapRef:
             name: service-container-info-front-admin
-        - prefix: SSO_
-          configMapRef:
-            name: sso-authc-info
         - configMapRef:
             name: session-manage-info-front-admin
+        - configMapRef:
+            name: authc-manage-info-front-admin
         env:
         - name: LC_ALL
           value: C.UTF-8
